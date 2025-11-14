@@ -1,4 +1,4 @@
-version: '3.9'
+#version: '3.9'
 
 services:
   backend:
@@ -103,8 +103,8 @@ services:
 
   prometheus:
     image: prom/prometheus
-    volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    #volumes:
+      #- ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
     restart: unless-stopped
