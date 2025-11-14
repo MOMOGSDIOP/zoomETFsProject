@@ -1,0 +1,144 @@
+{
+  "timestamp": "2025-07-29T11:21:26.379498",
+  "ratings": [],
+  "risk_analysis": {
+    "risk_distribution": {},
+    "validation_flags": [],
+    "metrics": {
+      "avg_score": NaN,
+      "score_distribution": {
+        "min": NaN,
+        "25p": NaN,
+        "median": NaN,
+        "75p": NaN,
+        "max": NaN
+      }
+    }
+  },
+  "stress_test": {
+    "market_crash": [
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ]
+    ],
+    "liquidity_shock": [
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ]
+    ],
+    "rate_increase": [
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ],
+      [
+        NaN
+      ]
+    ]
+  },
+  "data_stats": {
+    "num_etfs": 0,
+    "avg_score": NaN,
+    "risk_distribution": {}
+  },
+  "system": {
+    "device": "cpu",
+    "memory_usage": "860.92 MB",
+    "processing_time": 0.0
+  }
+}

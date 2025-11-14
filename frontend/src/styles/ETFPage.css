@@ -1,0 +1,26 @@
+.etf-page-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 24px;
+  padding: 24px;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+.etf-results-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow: auto;
+}
+
+@media (max-width: 768px) {
+  .etf-page-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  .etf-results-panel {
+    margin-top: 24px;
+  }
+}

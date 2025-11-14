@@ -1,0 +1,12 @@
+@media (max-width: 900px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    padding: 16px !important;
+  }
+  
+  .MuiTable-root {
+    display: block;
+    overflow-x: auto;
+  }
+}

@@ -1,0 +1,49 @@
+classDiagram
+    %% Classes principales
+    class ETFScoringEngine {
+        -config: Dict
+        -device: torch.device
+        +train(X, y, graph_data, epochs) Dict
+        +predict(X) pd.DataFrame
+        +explain(X) pd.DataFrame
+    }
+
+    class ETFDataPipeline {
+        +process(X) pd.DataFrame
+    }
+
+    class ETFFeatureBuilder {
+        +transform(X) pd.DataFrame
+    }
+
+    class ETFSemiSupervisedModel {
+        +forward(X) Tensor
+    }
+
+    %% Relations principales
+    ETFScoringEngine --> ETFDataPipeline : Utilise
+    ETFScoringEngine --> ETFFeatureBuilder : Utilise
+    ETFScoringEngine --> ETFSemiSupervisedModel : Contient
+    
+    ETFDataPipeline --> ETFFeatureBuilder : Traite les données pour
+    ETFFeatureBuilder --> ETFSemiSupervisedModel : Fournit les features à
+
+    %% Classes secondaires
+    class ETFGraphProcessor {
+        +prepare_graph_data(data) Dict
+    }
+
+    class ETFGraphModel {
+        +forward(graph_data) Tuple
+    }
+
+    class ETFSystemMonitor {
+        +log_operation_start(op_name)
+        +track_performance(metric, value)
+    }
+
+    %% Relations secondaires
+    ETFScoringEngine --> ETFGraphProcessor : Optionnel
+    ETFScoringEngine --> ETFSystemMonitor : Utilise
+    ETFGraphProcessor --> ETFGraphModel : Alimente
+    ETFScoringEngine --> ETFGraphModel : Optionnel

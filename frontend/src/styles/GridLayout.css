@@ -1,0 +1,40 @@
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+  height: 56px;
+  background-color: var(--card-background);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.project-title {
+  margin: 0;
+  font-size: 1.5rem;
+  user-select: none;
+}
+
+/* Nouvelle grille simplifiée */
+.dashboard-grid {
+  display: flex;
+  height: calc(100vh - 56px);
+  padding: 16px;
+  box-sizing: border-box;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.main-panel {
+  flex: 1;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  padding: 16px;
+  background-color: var(--card-background);
+  overflow: auto;
+}

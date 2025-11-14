@@ -1,0 +1,17 @@
+# 🚀 Déploiement complet
+make quick-start
+
+# 🔄 Redémarrage rapide
+make restart
+
+# 📊 Vérification du statut
+make status
+
+# 🩺 Diagnostic de santé
+make health-check
+
+# 🐛 Debug backend
+make logs-backend
+
+# 🤖 Debug Ollama  
+make logs-ollama

@@ -1,0 +1,355 @@
+/* ===========================================================
+   ETFIdentity - Style harmonisé au thème sombre principal
+   - Respecte les noms/notations existants dans le composant JS
+   - Présentation claire : tableaux / cartes / sections lisibles
+   =========================================================== */
+
+/* -------- Variables thème (cohérentes avec le style principal) -------- */
+:root {
+  --background-color: #1e2125;
+  --card-background-color: #2a2e34;
+  --card-background-darker: #23272b;
+  --border-color: #343a40;
+  --text-color: #e4e6eb;
+  --text-secondary: #9ea6af;
+  --accent-color: #4a90e2;
+  --muted: #98a0a8;
+  --success-color: #5cdb5c;
+  --danger-color: #ff6b6b;
+  --radius: 12px;
+  --shadow: 0 8px 24px rgba(0,0,0,0.45);
+  --soft-shadow: 0 4px 12px rgba(0,0,0,0.32);
+  --transition: 200ms cubic-bezier(.2,.9,.2,1);
+  --max-width: 1200px;
+}
+
+/* Page body (si nécessaire) */
+body {
+  background: var(--background-color);
+  color: var(--text-color);
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---------------- Container principal ---------------- */
+.etf-container {
+  max-width: var(--max-width);
+  margin: 28px auto;
+  padding: 22px;
+  background: linear-gradient(180deg, var(--card-background-color), var(--card-background-darker));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255,255,255,0.02);
+  box-sizing: border-box;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+/* légère élévation au hover pour l'UX (desktop) */
+.etf-container:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.6);
+}
+
+/* ---------------- Header ---------------- */
+.etf-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+/* Titre principal */
+.etf-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--accent-color);
+  border-bottom: 3px solid rgba(74,144,226,0.12);
+  display: inline-block;
+  padding-bottom: 0.2rem;
+  letter-spacing: 0.2px;
+}
+
+/* Bouton retour - cohérent avec le thème sombre */
+.etf-back-button {
+  border: 1px solid rgba(255,255,255,0.04);
+  background: linear-gradient(180deg, rgba(74,144,226,0.12), transparent);
+  color: var(--text-color);
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform var(--transition), background var(--transition);
+  box-shadow: var(--soft-shadow);
+}
+.etf-back-button:hover {
+  transform: translateY(-3px);
+  background: var(--accent-color);
+  color: #fff;
+  border-color: var(--accent-color);
+}
+
+/* ---------------- Divider ---------------- */
+.etf-divider {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.03));
+  margin: 18px 0;
+  border-radius: 2px;
+}
+
+/* ---------------- Basic info (présentation tabulaire légère) ---------------- */
+/* On conserve .etf-basic-info: affichage en grille, chaque cellule lisible */
+.etf-basic-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.02);
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02));
+  align-items: center;
+}
+
+/* Chaque champ dans la grille - on cible tout élément enfant (Typography, p, h6, etc.) */
+.etf-basic-info > * {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.02), transparent);
+  border-radius: 8px;
+}
+
+/* Label et valeur (s'appuie sur le markup existant) */
+.etf-basic-info h6,
+.etf-basic-info p,
+.etf-basic-info .MuiTypography-root {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.1;
+}
+.etf-basic-info strong,
+.etf-basic-info .value {
+  color: var(--text-color);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+/* ---------------- Section common ---------------- */
+.etf-section {
+  margin-top: 18px;
+}
+
+/* Titre de section (plus visible, net et sobre) */
+.etf-section-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin-top: 20px;
+  margin-bottom: 12px;
+  color: var(--text-color);
+  border-bottom: 2px solid rgba(255,255,255,0.02);
+  padding-bottom: 8px;
+}
+
+/* Description / résumé */
+.etf-description {
+  background: linear-gradient(90deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02));
+  padding: 12px 14px;
+  border-left: 4px solid rgba(74,144,226,0.12);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ---------------- Performance badge ---------------- */
+.perf-positive,
+.perf-negative {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: transform var(--transition);
+}
+.perf-positive {
+  background: linear-gradient(90deg, rgba(92,219,92,0.08), rgba(92,219,92,0.03));
+  color: var(--success-color);
+  box-shadow: 0 4px 12px rgba(86, 201, 86, 0.06);
+}
+.perf-negative {
+  background: linear-gradient(90deg, rgba(255,107,107,0.07), rgba(255,107,107,0.03));
+  color: var(--danger-color);
+  box-shadow: 0 4px 12px rgba(255,107,107,0.06);
+}
+
+/* ---------------- Charts : container & legend overrides ---------------- */
+.chart-container {
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 18px;
+  box-shadow: var(--soft-shadow);
+  transition: transform var(--transition);
+  max-height: 360px;
+  overflow: hidden;
+}
+.chart-container:hover {
+  transform: translateY(-4px);
+}
+
+/* Tooltip custom (Recharts) */
+.custom-tooltip {
+  background: rgba(20,24,28,0.85);
+  color: var(--text-color);
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  border: 1px solid rgba(255,255,255,0.03);
+}
+
+/* Legend wrapper common */
+.recharts-legend-wrapper {
+  color: var(--text-secondary) !important;
+}
+
+/* Pie label text (white for contrast) */
+.recharts-text {
+  fill: var(--text-color) !important;
+}
+
+/* ---------------- Info table (pour ETFGeneralInfo / ETFPositions / Legal etc.) ---------------- */
+/* Utilise .info-table pour tableaux structurés ; si tu veux, tu peux remplacer les sous-composants pour utiliser <table class="info-table"> */
+.etf-table-section {
+  background-color: var(--card-background-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 8px var(--shadow-color);
+}
+
+.etf-section-title {
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.etf-info-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  color: var(--text-color);
+}
+
+.etf-info-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.etf-info-table td:first-child {
+  font-weight: 500;
+  color: var(--text-secondary);
+  width: 40%;
+  border-right: 1px solid var(--border-color);
+}
+
+.etf-info-table td:last-child {
+  text-align: left;
+}
+
+.etf-info-table tr:last-child td {
+  border-bottom: none;
+}
+
+
+/* Small pill for tags inside tables */
+.tag-pill {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.03);
+  color: var(--text-color);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+/* ---------------- Cards pour petits blocs d'info ---------------- */
+.info-card {
+  background: linear-gradient(180deg, rgba(0,0,0,0.02), transparent);
+  border-radius: 10px;
+  padding: 12px;
+  border: 1px solid rgba(255,255,255,0.02);
+  box-shadow: var(--soft-shadow);
+}
+
+/* ---------------- Responsive : tables -> stacked view pour mobile ---------------- */
+/* Option : si tu utilises <table class="info-table">, ce CSS rendra chaque ligne "stackée" sur petits écrans.
+   Pour un rendu mobile optimal, ajouter data-label="Titre" sur chaque <td> (ex : <td data-label="Nom">) est recommandé. */
+@media (max-width: 760px) {
+  .etf-container { margin: 12px; padding: 14px; }
+  .etf-title { font-size: 1.4rem; }
+  .etf-basic-info { grid-template-columns: 1fr; gap: 10px; }
+  .chart-container { max-height: 260px; }
+
+  /* Table responsive-stacked */
+  .info-table, .info-table thead, .info-table tbody, .info-table th, .info-table td, .info-table tr {
+    display: block;
+    width: 100%;
+  }
+  .info-table thead { display: none; }
+  .info-table tbody tr {
+    margin-bottom: 12px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02));
+    padding: 10px;
+    border-radius: 8px;
+  }
+  .info-table td {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border: none;
+  }
+  /* Affiche l'en-tête précédemment (nécessite data-label sur td) */
+  .info-table td::before {
+    content: attr(data-label);
+    color: var(--text-secondary);
+    font-weight: 700;
+    margin-right: 8px;
+    flex: 0 0 45%;
+    text-align: left;
+  }
+}
+
+/* ---------------- Micro interactions & accessibilité ---------------- */
+.etf-container a, .etf-container button {
+  outline-color: rgba(74,144,226,0.25);
+}
+.etf-container :focus {
+  box-shadow: 0 0 0 4px rgba(74,144,226,0.06);
+  transition: box-shadow 120ms ease;
+}
+
+/* ---------------- Utilities (réutilisables dans sous-composants) ---------------- */
+.kv-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 0;
+}
+.kv-row .key { color: var(--text-secondary); font-weight: 600; }
+.kv-row .val { color: var(--text-color); font-weight: 800; }
+
+/* ---------------- Animations légères ---------------- */
+@keyframes etf-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.etf-container { animation: etf-fade-in 360ms ease forwards; }

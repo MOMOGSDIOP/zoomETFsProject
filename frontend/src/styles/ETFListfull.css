@@ -1,0 +1,97 @@
+/* ETFListFull.css */
+
+.etflistfull-container {
+  padding: 16px;
+  border-radius: 8px;
+  max-height: 600px;
+  overflow-y: auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Light mode styles */
+.light-mode.etflistfull-container {
+  background-color: var(--background-color);
+  color: #222;
+  border: 1px solid #ddd;
+}
+
+.light-mode.etflistfull-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.light-mode.etflistfull-container th,
+.light-mode.etflistfull-container td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.light-mode.etflistfull-container th {
+  background-color: #f5f5f5;
+  font-weight: 600;
+  text-align: left;
+}
+
+.light-mode.etflistfull-container tbody tr:hover {
+  background-color: #f0f8ff;
+  cursor: pointer;
+}
+
+/* Dark mode styles */
+.dark-mode.etflistfull-container {
+  background-color: #121212;
+  color: #ddd;
+  border: 1px solid #333;
+}
+
+.dark-mode.etflistfull-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dark-mode.etflistfull-container th,
+.dark-mode.etflistfull-container td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #444;
+}
+
+.dark-mode.etflistfull-container th {
+  background-color: #1e1e1e;
+  font-weight: 600;
+  text-align: left;
+}
+
+.dark-mode.etflistfull-container tbody tr:hover {
+  background-color: #333a44;
+  cursor: pointer;
+}
+
+/* Back button */
+.etflistfull-back-button {
+  margin-bottom: 12px;
+  padding: 6px 14px;
+  font-weight: 600;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.light-mode .etflistfull-back-button {
+  background-color: #1976d2;
+  color: white;
+  border: none;
+}
+
+.light-mode .etflistfull-back-button:hover {
+  background-color: #115293;
+}
+
+.dark-mode .etflistfull-back-button {
+  background-color: #2196f3;
+  color: #121212;
+  border: none;
+}
+
+.dark-mode .etflistfull-back-button:hover {
+  background-color: #64b5f6;
+}

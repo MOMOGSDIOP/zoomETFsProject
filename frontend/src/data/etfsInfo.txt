@@ -1,0 +1,31 @@
+ET ci dessous toutes les informations que l'on veut utiliser, ton principal objectif sera de creer un nouvelle page en integrant toutes les infos et d'avoir un plus beau visuel avec des graphiques )à prevoir et tres stylé.
+ 
+Informations générales : 
+
+indice, axe d'investissement, taille du fonds, frais totaux sur encours, methode de réplication, structure juridique, risque de stratégie , monnaie du fonds, volatilité sur un an, date de création, distribution, intervalle de distributioon, domicile du fonds, promoteur 
+
+Structure juridique :
+
+structure du fonds, conforme à ucits, administrateur , conseiller en placement, banque dépositaire, auditeur, fin de l'exercice, représentant suisse, agent payeur suisse, 
+
+Statut Fiscal :
+lister des pays : Allemagne, Suisse, Autriche,  
+
+Details de la réplication : 
+
+type d'indice, contrepartie swap, gestion des garanties, prets sur titres, contrepartie prets de titres,
+
+
+Positions: 
+les 10 positions en classe d'actifs les plus importants et les pays et les secteurs aussi
+
+
+Rendements:
+aperçu des rendements mensuels, bimensuels , trimensuels , semestriels, et annuells 
+
+Risque : 
+lister les valeurs des votalités sur des périodes différentes
+
+
+Bourse :
+lister les différentes bourses de cotation et  les horaires d'ouverture et de fermeture sur les marchés 

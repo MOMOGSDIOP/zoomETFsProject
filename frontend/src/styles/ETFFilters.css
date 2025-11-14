@@ -1,0 +1,297 @@
+/* Conteneur principal */
+.etf-filters-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 200px;
+  background-color: var(--card-background-color);
+  padding: 20px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.08);
+  overflow-y: auto;
+}
+
+/* Boutons OK et Réinitialiser (en haut) */
+.filters-header-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.filters-header-buttons button {
+  flex: 1;
+  padding: 10px 0;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  user-select: none;
+  height: 42px;
+}
+
+.btn-apply {
+  background-color: var(--btn-reset-bg);
+  color: var(--btn-reset-border);
+}
+
+.btn-apply:hover {
+  background-color: var(--btn-primary-hover);
+}
+
+.btn-reset {
+  background-color: var(--btn-reset-bg);
+  border: 2px solid var(--btn-reset-border);
+  color: var(--btn-reset-border);
+}
+
+.btn-reset:hover {
+  background-color: var(--btn-reset-hover-bg);
+  color: var(--btn-reset-hover-color);
+}
+
+/* Zone tri */
+.sort-box {
+  margin-bottom: 15px;
+}
+
+.sort-row {
+  display: flex;
+  gap: 14px;
+}
+
+.sort-active, .sort-inactive {
+  cursor: pointer;
+  user-select: none;
+  font-weight: 400;
+  font-size: 0.95em;
+  color: var(--text-color);
+}
+
+.sort-active {
+  color: var(--btn-primary-bg);
+}
+
+.sort-row span:hover {
+  text-decoration: underline;
+}
+
+.sort-arrow {
+  font-size: 1.2rem;
+  margin-left: 4px;
+}
+
+/* Titre filtres */
+.filters-header {
+  margin-bottom: 12px;
+}
+
+.filters-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  color: var(--text-color);
+}
+
+.filter-icon {
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+/* Filtres (colonne verticale) */
+.filters-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex-grow: 1;
+}
+
+/* Chaque bloc de filtre */
+.filter-block label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text-color);
+}
+
+/* STYLES REACT-SELECT CORRIGÉS - GARANTI SANS BLANC */
+.select__control {
+  border-radius: 8px;
+  border: 1px solid var(--border-color) !important;
+  background-color: var(--background-color) !important;
+  font-size: 0.95rem;
+  color: var(--text-color) !important;
+  box-shadow: none !important;
+  transition: border-color 0.2s ease;
+  min-height: 38px;
+}
+
+.select__control:hover {
+  border-color: var(--btn-primary-bg) !important;
+}
+
+.select__control--is-focused {
+  border-color: var(--btn-primary-bg) !important;
+  box-shadow: 0 0 0 2px rgb(79 70 229 / 0.4) !important;
+}
+
+.select__value-container {
+  padding: 6px 12px;
+}
+
+.select__single-value {
+  color: var(--text-color) !important;
+}
+
+.select__input {
+  color: var(--text-color) !important;
+}
+
+.select__input-container {
+  color: var(--text-color) !important;
+}
+
+.select__placeholder {
+  color: var(--text-color) !important;
+  opacity: 0.7;
+}
+
+/* MENU DÉROULANT - GARANTI SANS BLANC */
+.select__menu {
+  background-color: var(--card-background-color) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 0.1) !important;
+  border: 1px solid var(--border-color) !important;
+  z-index: 1000;
+}
+
+.select__menu-list {
+  background-color: var(--card-background-color) !important;
+  border-radius: 8px !important;
+  padding: 4px !important;
+}
+
+.select__option {
+  background-color: var(--card-background-color) !important;
+  color: var(--text-color) !important;
+  cursor: pointer !important;
+  border-radius: 4px !important;
+  margin: 2px 0 !important;
+}
+
+.select__option:hover {
+  background-color: var(--btn-primary-bg) !important;
+  color: white !important;
+}
+
+.select__option--is-focused {
+  background-color: var(--btn-primary-bg) !important;
+  color: white !important;
+}
+
+.select__option--is-selected {
+  background-color: var(--btn-primary-bg) !important;
+  color: white !important;
+}
+
+/* Styles pour sélection multiple */
+.select__multi-value {
+  background-color: var(--btn-primary-bg) !important;
+  color: white !important;
+  border-radius: 6px !important;
+}
+
+.select__multi-value__label {
+  color: white !important;
+  font-size: 0.85rem;
+}
+
+.select__multi-value__remove {
+  color: white !important;
+}
+
+.select__multi-value__remove:hover {
+  background-color: #ff6b6b !important;
+  color: white !important;
+}
+
+/* Indicateurs */
+.select__indicator {
+  color: var(--text-color) !important;
+  padding: 6px 8px !important;
+}
+
+.select__indicator:hover {
+  color: var(--btn-primary-bg) !important;
+}
+
+.select__dropdown-indicator {
+  color: var(--text-color) !important;
+}
+
+.select__clear-indicator {
+  color: var(--text-color) !important;
+}
+
+.select__clear-indicator:hover {
+  color: #ff6b6b !important;
+}
+
+/* Séparateur */
+.select__indicator-separator {
+  background-color: var(--border-color) !important;
+}
+
+/* Résumé filtres appliqués */
+.filters-summary {
+  margin-top: 20px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 12px;
+}
+
+.filters-summary h4 {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.applied-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-tag {
+  background-color: var(--btn-primary-bg);
+  color: white;
+  border-radius: 16px;
+  padding: 4px 12px;
+  font-size: 0.85rem;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.filter-label-toggle {
+  cursor: pointer;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* Garantir que tous les éléments enfants du menu ont la bonne couleur */
+.select__menu * {
+  background-color: var(--card-background-color) !important;
+  color: var(--text-color) !important;
+}
+
+.select__menu div {
+  background-color: var(--card-background-color) !important;
+}

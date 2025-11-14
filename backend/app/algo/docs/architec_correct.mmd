@@ -1,0 +1,44 @@
+flowchart TD
+    A[API/Bases de données] --> B[ETFDataPipeline]
+    
+    subgraph B[Data Pipeline]
+        B1[Raw Data] --> B2[Data Validation]
+        B2 --> B3[Data Processing]
+    end
+
+    B --> C[Feature Engineering]
+    
+    subgraph C[Feature Engineering]
+        C1[Fundamental Features]
+        C2[Risk Features]
+        C3[Liquidity Features]
+    end
+
+    C --> D[Core Model]
+    
+    subgraph D[Core Model]
+        D1[Semi-Supervised Model]
+        D2[VAE Component]
+        D3[GNN Integration]
+    end
+
+    D --> E[Evaluation]
+    
+    subgraph E[Evaluation]
+        E1[Stress Testing]
+        E2[SHAP Explanations]
+    end
+
+    E --> F[Output Generation]
+    
+    subgraph F[Output]
+        F1[Ratings]
+        F2[Analysis Reports]
+    end
+
+    style A fill:#f9f,stroke:#333
+    style B fill:#bbf,stroke:#333
+    style C fill:#f96,stroke:#333
+    style D fill:#6f9,stroke:#333
+    style E fill:#9cf,stroke:#333
+    style F fill:#cf9,stroke:#333

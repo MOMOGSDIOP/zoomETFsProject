@@ -1,0 +1,210 @@
+version: '3.9'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    image: zoometf-backend
+    env_file:
+      - ./backend/.env
+    depends_on:
+      redis:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+      - "1025:1025"  # Conservé pour compatibilité
+    environment:
+      - PYTHONPATH=/zoom-etf/backend
+      - PYTHONUNBUFFERED=1  # Ajout important pour les logs Python
+    volumes:
+      - ./backend:/zoom-etf/backend
+    restart: unless-stopped
+    command: uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:  # Nouveau healthcheck
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - zoometf-net
+
+ 
+   
+  ollama_init:
+    image: ollama/ollama:latest
+    command: ["ollama", "pull", "llama3:8b", "--path", "/data/models/llama3-8b"]
+    volumes:
+      - ollama_data:/data
+    networks:
+      - zoometf-net
+    restart: "no"
+    healthcheck:
+      test: ["CMD", "test", "-f", "/data/models/llama3-8b/model.bin"]
+      interval: 10s
+      retries: 30
+      start_period: 150s  # Laisse le temps de télécharger le modèle
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    ports:
+      - "11435:11435"
+    volumes:
+      - ollama_data:/data
+    networks:
+      - zoometf-net
+    depends_on:
+      - ollama_init
+    environment:
+      - OLLAMA_INTEL_GPU=false
+      - OLLAMA_FLASH_ATTENTION=false
+
+  redis:
+    image: redis:alpine
+    restart: unless-stopped
+    healthcheck:  # Healthcheck ajouté
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+    volumes:  # Persistence des données
+      - redis_data:/data
+    networks:
+      - zoometf-net
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.6.2
+    ports:
+      - "9200:9200"
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g  # Allocation mémoire
+      - xpack.security.enabled=false  # Sécurité désactivée pour le dev
+    restart: unless-stopped
+    ulimits:  # Configuration importante pour ES
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:  # Persistence des données
+      - es_data:/usr/share/elasticsearch/data
+    healthcheck:  # Healthcheck ajouté
+      test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - zoometf-net
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+    networks:
+      - zoometf-net
+
+  db:
+    image: postgres:14
+    container_name: zoometf-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: zoomuser
+      POSTGRES_PASSWORD: zoompass
+      POSTGRES_DB: zoometf
+      PGDATA: /var/lib/postgresql/data/pgdata  # Meilleure organisation
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./backend/app/db/init:/docker-entrypoint-initdb.d  # Montage du dossier d'initialisation
+    healthcheck:  # Healthcheck ajouté
+      test: ["CMD-SHELL", "pg_isready -U zoomuser -d zoometf"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - zoometf-net
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+    restart: unless-stopped
+    volumes:  # Persistence des données
+      - grafana_data:/var/lib/grafana
+    networks:
+      - zoometf-net
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    working_dir: /app
+    image: zoometf-frontend
+    env_file:
+      - ./frontend/.env
+    #volumes:
+     # - ./frontend:/app
+      #- /app/node_modules
+    ports:
+      - "3001:3000"  # Port exposé pour le frontend
+    command: sh -c "npm install && npm start"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - NODE_ENV=development
+    restart: unless-stopped
+    healthcheck:
+      disable: true  # << Désactivation du healthcheck pour éviter l'erreur
+    networks:
+      - zoometf-net  # << Correction ici : il manquait le nom du réseau
+
+
+  docs:
+    image: nginx:alpine
+    volumes:
+      - ./docs/site:/usr/share/nginx/html:ro
+    ports:
+      - "4000:80"
+    restart: unless-stopped
+    networks:
+      - zoometf-net
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    volumes:  # Persistence des données
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:  # Dépendance explicite
+      db:
+        condition: service_healthy
+    networks:
+      - zoometf-net
+
+volumes:
+  zoometf_db_data:
+  redis_data:
+  es_data:
+  grafana_data:
+  pgadmin_data:
+  pg_data:
+  ollama_data:
+
+networks:
+  zoometf-net:
+    driver: bridge

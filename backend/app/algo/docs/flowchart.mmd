@@ -1,0 +1,12 @@
+flowchart TD
+    A[Données brutes] --> B(ETFDataPipeline)
+    B --> C(ETFFeatureBuilder)
+    C --> D[ETFSemiSupervisedModel]
+    A --> E[ETFGraphProcessor]
+    E --> F[ETFGraphModel]
+    D --> G[(Prédictions)]
+    F --> G
+    G --> H[ETFExplanationGenerator]
+    G --> I[ETFStressTester]
+    J[ETFSystemMonitor] -.->|surveille| B
+    J -.->|surveille| D

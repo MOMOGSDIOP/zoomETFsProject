@@ -1,0 +1,103 @@
+:root {
+  /* Palette sombre professionnelle (déjà présente dans ton thème principal) */
+  --background-color: #1e2125;
+  --card-background-color: #2a2e34;
+  --card-background-darker: #24282d;
+  --border-color: #3a4048;
+  --text-color: #e4e6eb;
+  --text-secondary: #b0b3b8;
+  --accent-color: #4a90e2;
+  --positive-color: #5cdb5c;
+  --negative-color: #ff6b6b;
+  --shadow-color: rgba(0, 0, 0, 0.25);
+}
+
+/* Conteneur principal */
+.user-portfolio-rebalancement {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+}
+
+/* En-tête (AppBar / Toolbar) */
+.dashboard-header {
+  background-color: var(--card-background-darker) !important;
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 2px 6px var(--shadow-color);
+  padding: 0 16px;
+}
+
+.project-title {
+  font-weight: bold;
+  color: var(--accent-color);
+}
+
+/* Zone gauche du header */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Boutons du header */
+.dashboard-header button {
+  background-color: transparent;
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.dashboard-header button:hover {
+  background-color: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+}
+
+/* Menu déroulant */
+.MuiMenu-paper {
+  background-color: var(--card-background-color) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--border-color);
+}
+
+.MuiMenuItem-root {
+  transition: background-color 0.2s ease;
+}
+
+.MuiMenuItem-root:hover {
+  background-color: var(--card-background-darker) !important;
+}
+
+/* Bouton retour */
+.user-portfolio-rebalancement .MuiButton-outlined {
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+  transition: all 0.3s ease;
+}
+
+.user-portfolio-rebalancement .MuiButton-outlined:hover {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+/* Section centrale */
+.user-portfolio-rebalancement main,
+.user-portfolio-rebalancement .content-section {
+  background-color: var(--card-background-color);
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px;
+  box-shadow: 0 2px 10px var(--shadow-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+  }
+}

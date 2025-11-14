@@ -1,0 +1,10 @@
+graph TD
+    A[Client Frontend] --> B[API Gateway FastAPI]
+    B --> C{Service Data Collection}
+    C --> D[Yahoo Finance API]
+    C --> E[FinancialModelingPrep API]
+    C --> F[Alpha Vantage API]
+    C --> G[JustETF Scraper]
+    B --> H[Cache Redis]
+    H --> I[Elasticsearch]
+    I --> J[Dataset Final]

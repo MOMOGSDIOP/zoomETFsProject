@@ -1,0 +1,116 @@
+zoom-etf/
+├── backend/
+│   ├── alembic/
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── main.py
+│   │   ├── core/
+│   │   │   ├── database.py
+│   │   │   ├── init_db.py
+│   │   │   ├── security.py
+│   │   │   └── settings.py
+│   │   ├── services/
+│   │   │   ├── yahoo.py
+│   │   │   ├── justetf_scraper.py
+│   │   │   ├── data_sync.py              # Nouveau
+│   │   │   ├── email_sender.py           # Nouveau
+│   │   │   └── user_service.py           # Nouveau
+│   │   ├── utils/
+│   │   │   ├── cache.py
+│   │   │   ├── logger.py
+│   │   │   └── email.py                  # Nouveau
+│   │   ├── api/
+│   │   │   ├── endpoints/
+│   │   │   │   ├── etfs.py
+│   │   │   │   ├── admin.py
+│   │   │   │   └── auth.py               # Nouveau
+│   │   ├── db/                           # Maintenant sous app/
+│   │   │   ├── database.py               # Nouveau
+│   │   │   ├── session.py                # Nouveau
+│   │   │   ├── models.py                 # Nouveau
+│   │   │   ├── user_service.py           # Nouveau
+│   │   │   └── migrations/               # Nouveau
+│   │   ├── models/                       # Maintenant sous app/
+│   │   │   ├── ETF.py                    # Nouveau
+│   │   │   ├── ETFHistory.py             # Nouveau
+│   │   │   ├── User.py                   # Nouveau
+│   │   │   └── user_auth.py              # Nouveau
+│   │   ├── schemas/                      # Maintenant sous app/
+│   │   │   └── auth.py                   # Nouveau
+│   │   ├── tests/
+│   │   │   ├── test_yahoo.py
+│   │   │   └── test_scraper.py
+│   ├── Dockerfile
+│   ├── .env
+│   ├── .dockerignore
+│   ├── requirements.txt
+│   ├── alembic.ini
+│   └── start.sh
+│
+├── frontend/
+│   └── src/
+│       ├── components/
+│       │   ├── ETFChart.js
+│       │   ├── ETFFilters.js
+│       │   ├── ETFFiltersManager.js
+│       │   ├── ETFList.js
+│       │   ├── ETFListFull.js             # Nouveau
+│       │   ├── ETFSearcher.js
+│       │   ├── ETFTable.js
+│       │   ├── UserPortfolio.js
+│       │   ├── ETFIdentity.js             # Nouveau
+│       │   ├── etfidentity/               # Nouveau dossier
+│       │   │   ├── ETFExchange.js
+│       │   │   ├── ETFGeneralInfo.js
+│       │   │   ├── ETFLegalStructure.js
+│       │   │   ├── ETFPositions.js
+│       │   │   └── ETFRiskChart.js
+│       │   ├── quadrants/
+│       │   │   ├── BottomLeftQuadrant.js
+│       │   │   ├── BottomRightQuadrant.js
+│       │   │   ├── TopLeftQuadrant.js
+│       │   │   └── TopRightQuadrants.js
+│       │   └── userportfolio/
+│       │       ├── UserPortfolioAnalysis.js
+│       │       ├── UserPortfolioConseils.js
+│       │       ├── UserPortfolioDividendes.js
+│       │       ├── UserPortfolioExport.js
+│       │       ├── UserPortfolioList.js
+│       │       ├── UserPortfolioPerformance.js
+│       │       ├── UserPortfolioRebalancement.js
+│       │       ├── UserPortfolioAlert.js
+│       │       └── UserPortfolioTransaction.js
+│       ├── data/
+│       │   ├── countries.js
+│       │   └── etfs.js
+│       ├── pages/
+│       │   └── Dashboard.js
+│       ├── styles/
+│       │   ├── ETFFilters.css
+│       │   ├── ETFTable.css
+│       │   ├── Global.css
+│       │   ├── GridLayout.css
+│       │   ├── MediaQueries.css
+│       │   ├── ETFidentity.css
+│       │   ├── UserPortfolio.css
+│       │   ├── UserPortfolioFeature.css
+│       │   └── Theme.js
+│       ├── utils/
+│       │   └── export.js
+│       ├── App.js
+│       ├── index.css
+│       ├── index.js
+│       ├── Dockerfile
+│       ├── package.json
+│       └── package-lock.json
+│
+├── monitoring/
+│   ├── prometheus.yml
+│   └── grafana/
+│
+├── docker-compose.yml
+├── README.md
+└── docs/
+    ├── ARCHITECTURE.md
+    ├── DECISIONS.md
+    └── API.md

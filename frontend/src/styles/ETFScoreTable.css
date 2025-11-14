@@ -1,0 +1,233 @@
+/* Variables thématiques */
+:root {
+  --background-color: #ffffff;
+  --text-color: #1a1a1a;
+  --text-secondary: #666666;
+  --card-background: #ffffff;
+  --border-color: #e0e0e0;
+  --hover-color: #7c7a91;
+  --header-bg: #2c3e50;
+  --header-text: #ffffff;
+  --star-full: #2980b9;
+  --star-empty: #cccccc;
+  --star-bg: #FFF9E6;
+  --volatility-bg: #ecf0f1;
+  --volatility-bar-start: #3498db;
+  --volatility-bar-end: #2980b9;
+  --volatility-text: #2c3e50;
+  --performance-color: #27ae60;
+  --price-color: #1a1a1a;
+  --ter-color: #7f8c8d;
+  --button-bg: #3498db;
+  --button-text: #ffffff;
+  --button-hover: #2980b9;
+}
+
+[data-theme='dark'] {
+  --background-color: #0d1b2a;
+  --text-color: #e0e0e0;
+  --text-secondary: #a0a0a0;
+  --card-background: #1b263b;
+  --border-color: #2a3a5a;
+  --hover-color: #65738f;
+  --header-bg: #14213d;
+  --header-text: #e0e0e0;
+  --star-full: #4fc3f7;
+  --star-empty: #555555;
+  --star-bg: #1a2a3a;
+  --volatility-bg: #2a3a5a;
+  --volatility-bar-start: #4fc3f7;
+  --volatility-bar-end: #1976d2;
+  --volatility-text: #ffffff;
+  --performance-color: #81c784;
+  --price-color: #e0e0e0;
+  --ter-color: #a0a0a0;
+  --button-bg: #1976d2;
+  --button-text: #ffffff;
+  --button-hover: #1565c0;
+}
+
+/* Styles de base */
+.etf-table-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto; 
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.etf-score-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 14px;
+  table-layout: fixed;
+  background: var(--border-background);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.etf-score-table th {
+  background-color: var(--header-bg);
+  color: var(--header-text);
+  font-weight: 600;
+  padding: 12px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.etf-score-table td {
+  padding: 12px;
+  text-align: center;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+.etf-score-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.etf-score-table tbody tr:hover {
+  background-color: var(--hover-color);
+  cursor: pointer;
+}
+
+/* Colonnes spécifiques */
+.name-column {
+  width: 25%;
+  text-align: left;
+}
+
+.rating-column {
+  width: 15%;
+}
+
+.etf-name {
+  text-align: left;
+  padding-left: 12px;
+}
+
+.etf-name-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.etf-main-name {
+  font-weight: 600;
+  margin-bottom: 4px;
+  word-break: break-word;
+  color: var(--text-color);
+}
+
+.etf-issuer {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* Notation par étoiles */
+.star-rating {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.star {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.full-star {
+  color: var(--star-full);
+}
+
+.empty-star {
+  color: var(--star-empty);
+}
+
+.star-rating-cell {
+  background-color: var(--border-background);
+  padding: 8px 4px !important;
+}
+
+/* Barre de volatilité */
+.volatility-bar-container {
+  position: relative;
+  height: 20px;
+  background-color: var(--volatility-bg);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 0 auto;
+  max-width: 120px;
+}
+
+.volatility-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--volatility-bar-start), var(--volatility-bar-end));
+  transition: width 0.3s ease;
+}
+
+.volatility-value {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--volatility-text);
+}
+
+/* Styles des cellules */
+.performance-cell {
+  font-weight: 600;
+  color: var(--performance-color);
+}
+
+.ter-cell {
+  font-weight: 500;
+  color: var(--ter-color);
+}
+
+.price-cell {
+  font-weight: 600;
+  color: var(--price-color);
+}
+
+/* Message vide */
+.no-etfs-message {
+  text-align: center;
+  padding: 40px;
+  font-size: 16px;
+  color: var(--text-color);
+}
+
+/* Bouton Retour */
+.btn-back {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+
+.btn-back:hover {
+  background-color: var(--button-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.back-button-container {
+  text-align: left;
+  padding-left: 10px;
+}
