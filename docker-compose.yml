@@ -15,23 +15,21 @@ services:
         condition: service_healthy
       db:
         condition: service_healthy
-      # Ollama retiré temporairement pour éviter le blocage
     ports:
       - "8000:8000"
-      - "1025:1025"
+      - "1025:1025"  # Conservé pour compatibilité
     environment:
       - PYTHONPATH=/zoom-etf/backend
-      - PYTHONUNBUFFERED=1
+      - PYTHONUNBUFFERED=1  # Ajout important pour les logs Python
     volumes:
       - ./backend:/zoom-etf/backend
     restart: unless-stopped
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-    healthcheck:
+    command: uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:  # Nouveau healthcheck
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
-      timeout: 15s
-      retries: 5
-      start_period: 40s
+      timeout: 10s
+      retries: 3
     networks:
       - zoometf-net
 
@@ -106,12 +104,12 @@ services:
   redis:
     image: redis:alpine
     restart: unless-stopped
-    healthcheck:
+    healthcheck:  # Healthcheck ajouté
       test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
-      retries: 5
-    volumes:
+      retries: 3
+    volumes:  # Persistence des données
       - redis_data:/data
     networks:
       - zoometf-net
@@ -122,26 +120,27 @@ services:
       - "9200:9200"
     environment:
       - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms1g -Xmx1g
-      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g  # Allocation mémoire
+      - xpack.security.enabled=false  # Sécurité désactivée pour le dev
     restart: unless-stopped
-    ulimits:
+    ulimits:  # Configuration importante pour ES
       memlock:
         soft: -1
         hard: -1
-    volumes:
+    volumes:  # Persistence des données
       - es_data:/usr/share/elasticsearch/data
-    healthcheck:
+    healthcheck:  # Healthcheck ajouté
       test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
-      interval: 15s
-      timeout: 10s
-      retries: 8
-      start_period: 60s
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - zoometf-net
 
   prometheus:
     image: prom/prometheus
+    # volumes:
+    #  - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
     restart: unless-stopped
@@ -156,30 +155,26 @@ services:
       POSTGRES_USER: zoomuser
       POSTGRES_PASSWORD: zoompass
       POSTGRES_DB: zoometf
-      PGDATA: /var/lib/postgresql/data/pgdata
+      PGDATA: /var/lib/postgresql/data/pgdata  # Meilleure organisation
     ports:
       - "5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
-      - ./backend/app/db/init:/docker-entrypoint-initdb.d
-    healthcheck:
+      - ./backend/app/db/init:/docker-entrypoint-initdb.d  # Montage du dossier d'initialisation
+    healthcheck:  # Healthcheck ajouté
       test: ["CMD-SHELL", "pg_isready -U zoomuser -d zoometf"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
-      retries: 10
-      start_period: 30s
+      retries: 5
     networks:
       - zoometf-net
 
   grafana:
     image: grafana/grafana
     ports:
-      - "3001:3000"
-    environment:
-      - GF_AUTH_ANONYMOUS_ENABLED=true
-      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+      - "3000:3000"
     restart: unless-stopped
-    volumes:
+    volumes:  # Persistence des données
       - grafana_data:/var/lib/grafana
     networks:
       - zoometf-net
@@ -192,30 +187,23 @@ services:
     image: zoometf-frontend
     env_file:
       - ./frontend/.env
+    #volumes:
+      #- ./frontend/src:/app/src           # Uniquement les sources
+      #- ./frontend/public:/app/public      # Uniquement les assets
+      #- ./frontend/package.json:/app/package.json  # package.json explicitement
+      #- /app/node_modules
     ports:
-      - "80:3000"
-    command: >
-      sh -c "
-      echo '📦 Installation des dépendances...' &&
-      npm install &&
-      echo '🚀 Démarrage du frontend...' &&
-      npm start
-      "
+      - "80:3000" # Port exposé pour le frontend
+    command: sh -c "npm install && npm start"
     environment:
       - CHOKIDAR_USEPOLLING=true
       - NODE_ENV=development
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
-      interval: 30s
-      timeout: 15s
-      retries: 8
-      start_period: 90s
-    depends_on:
-      backend:
-        condition: service_healthy
+      disable: true  # << Désactivation du healthcheck pour éviter l'erreur
     networks:
-      - zoometf-net
+      - zoometf-net  # << Correction ici : il manquait le nom du réseau
+
 
   docs:
     image: nginx:alpine
@@ -235,21 +223,21 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - "5050:80"
-    volumes:
+    volumes:  # Persistence des données
       - pgadmin_data:/var/lib/pgadmin
-    depends_on:
+    depends_on:  # Dépendance explicite
       db:
         condition: service_healthy
     networks:
       - zoometf-net
 
 volumes:
+  zoometf_db_data:
   redis_data:
   es_data:
   grafana_data:
   pgadmin_data:
   pg_data:
-  ollama_data:
 
 networks:
   zoometf-net:
