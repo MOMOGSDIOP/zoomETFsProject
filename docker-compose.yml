@@ -1,4 +1,4 @@
-#version: '3.9'
+version: '3.9'
 
 services:
   backend:
@@ -15,17 +15,19 @@ services:
         condition: service_healthy
       db:
         condition: service_healthy
+      ollama:
+        condition: service_healthy
     ports:
       - "8000:8000"
-      - "1025:1025"  # Conservé pour compatibilité
+      - "1025:1025"
     environment:
       - PYTHONPATH=/zoom-etf/backend
-      - PYTHONUNBUFFERED=1  # Ajout important pour les logs Python
+      - PYTHONUNBUFFERED=1
     volumes:
       - ./backend:/zoom-etf/backend
     restart: unless-stopped
     command: uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
-    healthcheck:  # Nouveau healthcheck
+    healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
@@ -33,47 +35,53 @@ services:
     networks:
       - zoometf-net
 
- 
-   
-  ollama_init:
-    image: ollama/ollama:latest
-    command: ["ollama", "pull", "llama3:8b", "--path", "/data/models/llama3-8b"]
-    volumes:
-      - ollama_data:/data
-    networks:
-      - zoometf-net
-    restart: "no"
-    healthcheck:
-      test: ["CMD", "test", "-f", "/data/models/llama3-8b/model.bin"]
-      interval: 10s
-      retries: 30
-      start_period: 150s  # Laisse le temps de télécharger le modèle
-
+  # CORRECTION : Ollama d'abord, puis initialisation
   ollama:
     image: ollama/ollama:latest
     container_name: ollama
     restart: unless-stopped
     ports:
-      - "11435:11435"
+      - "11434:11434"  # ✅ Port standard
     volumes:
-      - ollama_data:/data
+      - ollama_data:/root/.ollama
     networks:
       - zoometf-net
-    depends_on:
-      - ollama_init
     environment:
-      - OLLAMA_INTEL_GPU=false
-      - OLLAMA_FLASH_ATTENTION=false
+      - OLLAMA_HOST=0.0.0.0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # CORRECTION : Service d'initialisation amélioré
+  ollama_init:
+    image: curlimages/curl:latest
+    depends_on:
+      ollama:
+        condition: service_healthy
+    command: >
+      sh -c "
+      echo '📥 Téléchargement du modèle llama3:8b...' &&
+      curl -X POST http://ollama:11434/api/pull \
+        -H 'Content-Type: application/json' \
+        -d '{\"name\": \"llama3:8b\"}' &&
+      echo '✅ Modèle téléchargé avec succès'
+      "
+    networks:
+      - zoometf-net
+    restart: "no"
 
   redis:
     image: redis:alpine
     restart: unless-stopped
-    healthcheck:  # Healthcheck ajouté
+    healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 5s
       retries: 3
-    volumes:  # Persistence des données
+    volumes:
       - redis_data:/data
     networks:
       - zoometf-net
@@ -84,16 +92,16 @@ services:
       - "9200:9200"
     environment:
       - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms1g -Xmx1g  # Allocation mémoire
-      - xpack.security.enabled=false  # Sécurité désactivée pour le dev
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - xpack.security.enabled=false
     restart: unless-stopped
-    ulimits:  # Configuration importante pour ES
+    ulimits:
       memlock:
         soft: -1
         hard: -1
-    volumes:  # Persistence des données
+    volumes:
       - es_data:/usr/share/elasticsearch/data
-    healthcheck:  # Healthcheck ajouté
+    healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
       interval: 10s
       timeout: 5s
@@ -103,8 +111,6 @@ services:
 
   prometheus:
     image: prom/prometheus
-    #volumes:
-      #- ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
     restart: unless-stopped
@@ -119,13 +125,13 @@ services:
       POSTGRES_USER: zoomuser
       POSTGRES_PASSWORD: zoompass
       POSTGRES_DB: zoometf
-      PGDATA: /var/lib/postgresql/data/pgdata  # Meilleure organisation
+      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
-      - ./backend/app/db/init:/docker-entrypoint-initdb.d  # Montage du dossier d'initialisation
-    healthcheck:  # Healthcheck ajouté
+      - ./backend/app/db/init:/docker-entrypoint-initdb.d
+    healthcheck:
       test: ["CMD-SHELL", "pg_isready -U zoomuser -d zoometf"]
       interval: 5s
       timeout: 5s
@@ -136,12 +142,12 @@ services:
   grafana:
     image: grafana/grafana
     ports:
-      - "3000:3000"
+      - "3001:3000"  # ✅ Changé de port pour éviter conflit
     environment:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
     restart: unless-stopped
-    volumes:  # Persistence des données
+    volumes:
       - grafana_data:/var/lib/grafana
     networks:
       - zoometf-net
@@ -154,21 +160,23 @@ services:
     image: zoometf-frontend
     env_file:
       - ./frontend/.env
-    #volumes:
-     # - ./frontend:/app
-      #- /app/node_modules
     ports:
-      - "80:3000"  # Port exposé pour le frontend
+      - "80:3000"
     command: sh -c "npm install && npm start"
     environment:
       - CHOKIDAR_USEPOLLING=true
       - NODE_ENV=development
     restart: unless-stopped
-    healthcheck:
-      disable: true  # << Désactivation du healthcheck pour éviter l'erreur
+    healthcheck:  # ✅ Healthcheck réactivé
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    depends_on:
+      - backend
     networks:
-      - zoometf-net  # << Correction ici : il manquait le nom du réseau
-
+      - zoometf-net
 
   docs:
     image: nginx:alpine
@@ -188,16 +196,15 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - "5050:80"
-    volumes:  # Persistence des données
+    volumes:
       - pgadmin_data:/var/lib/pgadmin
-    depends_on:  # Dépendance explicite
+    depends_on:
       db:
         condition: service_healthy
     networks:
       - zoometf-net
 
 volumes:
-  zoometf_db_data:
   redis_data:
   es_data:
   grafana_data:
