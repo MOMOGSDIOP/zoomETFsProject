@@ -25,12 +25,7 @@ services:
     volumes:
       - ./backend:/zoom-etf/backend
     restart: unless-stopped
-    command: >
-      sh -c "
-      echo '🔍 Vérification Ollama en arrière-plan...' &&
-      # Démarrage IMMÉDIAT du backend, vérification Ollama en parallèle
-      uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
-      "
+    command: uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
