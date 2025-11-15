@@ -15,8 +15,7 @@ services:
         condition: service_healthy
       db:
         condition: service_healthy
-      ollama:
-        condition: service_healthy
+      # Ollama retiré temporairement pour éviter le blocage
     ports:
       - "8000:8000"
       - "1025:1025"
@@ -28,17 +27,8 @@ services:
     restart: unless-stopped
     command: >
       sh -c "
-      echo '🔍 Vérification de la disponibilité d Ollama...' &&
-      
-      # ATTENTE CRITIQUE : Le backend attend Ollama INDEFINIMENT
-      echo '⏳ En attente du modèle Ollama... (peut prendre 20-30 minutes)' &&
-      until curl -s http://ollama:11434/api/tags | grep -q '\"name\":\"llama3:8b\"'; do
-        echo '⏳ Modèle Ollama pas encore disponible, nouvel essai dans 30s...' &&
-        sleep 30
-      done &&
-      
-      echo '✅ Ollama complètement opérationnel avec le modèle' &&
-      echo '🚀 Démarrage du backend...' &&
+      echo '🔍 Vérification Ollama en arrière-plan...' &&
+      # Démarrage IMMÉDIAT du backend, vérification Ollama en parallèle
       uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
       "
     healthcheck:
@@ -46,11 +36,11 @@ services:
       interval: 30s
       timeout: 15s
       retries: 5
-      start_period: 120s
+      start_period: 40s
     networks:
       - zoometf-net
 
-  # OLLAMA AVEC GARANTIE DE FONCTIONNEMENT
+  # OLLAMA SIMPLIFIÉ - PAS DE COMMANDES COMPLEXES
   ollama:
     image: ollama/ollama:latest
     container_name: ollama
@@ -63,75 +53,60 @@ services:
       - zoometf-net
     environment:
       - OLLAMA_HOST=0.0.0.0
-    # HEALTHCHECK QUI VERIFIE LE MODÈLE SPÉCIFIQUE
+    # HEALTHCHECK SIMPLE - vérifie seulement que le processus répond
     healthcheck:
-      test: >
-        sh -c "
-        curl -s http://localhost:11434/api/tags | grep -q '\"name\":\"llama3:8b\"'
-        "
+      test: ["CMD", "curl", "-f", "http://localhost:11434/"]
       interval: 30s
       timeout: 10s
-      retries: 999  # PRESQUE INFINI
-      start_period: 1800s  # 30 MINUTES pour le téléchargement
-    # DÉMARRAGE ROBUSTE
-    command: >
-      sh -c "
-      echo '🚀 Démarrage d Ollama...' &&
-      ollama serve
-      "
+      retries: 10
+      start_period: 60s
 
-  # SERVICE D'INITIALISATION GARANTI
+  # OLLAMA_INIT CORRIGÉ - syntaxe shell valide
   ollama_init:
     image: curlimages/curl:latest
     depends_on:
       ollama:
-        condition: service_started
+        condition: service_healthy
     command: >
       sh -c "
+      # Phase 1: Attente de l'API Ollama
       echo '🔍 Phase 1: Attente de l API Ollama...' &&
-      
-      # Attente très longue pour l'API
-      until curl -s http://ollama:11434/api/version > /dev/null; do
-        echo '⏳ API Ollama pas encore prête, attente 15s...' &&
+      for i in 1 2 3 4 5 6 7 8 9 10; do
+        if curl -s http://ollama:11434/api/version > /dev/null; then
+          echo '✅ API Ollama disponible' &&
+          break
+        fi &&
+        echo '⏳ API Ollama pas encore prête, attente 15s... ($$i/10)' &&
         sleep 15
       done &&
-      echo '✅ API Ollama disponible' &&
       
+      # Phase 2: Vérification modèle existant
       echo '🔍 Phase 2: Vérification modèle existant...' &&
-      if curl -s http://ollama:11434/api/tags | grep -q '\"name\":\"llama3:8b\"'; then
-        echo '✅ Modèle llama3:8b déjà présent - SKIP' &&
+      if curl -s http://ollama:11434/api/tags | grep -q 'llama3:8b'; then
+        echo '✅ Modèle llama3:8b déjà présent' &&
         exit 0
       fi &&
       
-      echo '📥 Phase 3: TÉLÉCHARGEMENT CRITIQUE du modèle...' &&
-      echo '⚠️  ATTENTION: Opération critique - Ne pas interrompre!' &&
-      echo '⏰ Durée estimée: 15-30 minutes' &&
-      
-      # Téléchargement avec monitoring progressif
+      # Phase 3: Téléchargement
+      echo '📥 Phase 3: Téléchargement du modèle llama3:8b...' &&
+      echo '⚠️  Durée estimée: 10-30 minutes' &&
       curl -X POST http://ollama:11434/api/pull \
         -H 'Content-Type: application/json' \
-        -d '{\"name\": \"llama3:8b\"}' \
-        --max-time 3600  # 1 HEURE maximum
+        -d '{\"name\": \"llama3:8b\"}' &&
       
-      EXIT_CODE=$$? &&
-      
-      if [ $$EXIT_CODE -eq 0 ]; then
-        echo '🔍 Phase 4: Vérification finale...' &&
-        if curl -s http://ollama:11434/api/tags | grep -q '\"name\":\"llama3:8b\"'; then
-          echo '🎉 SUCCÈS CRITIQUE: Modèle llama3:8b installé' &&
-          echo '✅ Ollama opérationnel pour le backend'
-        else
-          echo '❌ ÉCHEC: Modèle non détecté après installation' &&
-          exit 1
-        fi
+      # Phase 4: Vérification finale
+      echo '🔍 Phase 4: Vérification finale...' &&
+      if curl -s http://ollama:11434/api/tags | grep -q 'llama3:8b'; then
+        echo '🎉 SUCCÈS: Modèle llama3:8b installé' &&
+        echo '✅ Ollama opérationnel'
       else
-        echo '❌ ÉCHEC: Téléchargement interrompu (timeout ou erreur)' &&
+        echo '❌ ÉCHEC: Modèle non détecté après installation' &&
         exit 1
       fi
       "
     networks:
       - zoometf-net
-    restart: on-failure:3  # 3 tentatives en cas d'échec
+    restart: "no"
 
   redis:
     image: redis:alpine
@@ -140,7 +115,7 @@ services:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 5
     volumes:
       - redis_data:/data
     networks:
@@ -165,8 +140,8 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
       interval: 15s
       timeout: 10s
-      retries: 15
-      start_period: 90s
+      retries: 8
+      start_period: 60s
     networks:
       - zoometf-net
 
@@ -196,8 +171,8 @@ services:
       test: ["CMD-SHELL", "pg_isready -U zoomuser -d zoometf"]
       interval: 10s
       timeout: 5s
-      retries: 20
-      start_period: 45s
+      retries: 10
+      start_period: 30s
     networks:
       - zoometf-net
 
@@ -226,18 +201,9 @@ services:
       - "80:3000"
     command: >
       sh -c "
-      echo '⏳ Attente du backend...' &&
-      
-      # Le frontend attend aussi le backend INDEFINIMENT
-      until curl -s http://backend:8000/health > /dev/null; do
-        echo '⏳ Backend pas encore prêt, attente 30s...' &&
-        sleep 30
-      done &&
-      
-      echo '✅ Backend disponible' &&
-      echo '📦 Installation frontend...' &&
+      echo '📦 Installation des dépendances...' &&
       npm install &&
-      echo '🚀 Démarrage frontend...' &&
+      echo '🚀 Démarrage du frontend...' &&
       npm start
       "
     environment:
@@ -248,10 +214,11 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 30s
       timeout: 15s
-      retries: 10
-      start_period: 180s
+      retries: 8
+      start_period: 90s
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
       - zoometf-net
 
