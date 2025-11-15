@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir --timeout 100 -r requirements.txt
 
+
 # === final stage ===
 FROM python:3.9-slim
 
@@ -28,16 +29,16 @@ RUN apt-get update && apt-get install -y \
 COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
-# COPIER LE START.SH EN PREMIER
-COPY backend/start.sh /zoom-etf/backend/start.sh
-RUN chmod +x /zoom-etf/backend/start.sh
-
-# Puis copier le reste
-COPY backend/ /zoom-etf/backend/
+COPY backend/app backend/app
+COPY backend/tests backend/tests
+COPY backend/alembic.ini backend/alembic.ini
+COPY backend/start.sh backend/start.sh
 
 ENV PYTHONPATH=/zoom-etf/backend
 ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 
+RUN chmod +x backend/start.sh
+
 EXPOSE 8000
 
-CMD ["/zoom-etf/backend/start.sh"]
+CMD ["./backend/start.sh"]
