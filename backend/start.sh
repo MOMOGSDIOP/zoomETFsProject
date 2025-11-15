@@ -15,8 +15,8 @@ else
 fi
 
 echo "🔧 Initializing database data (if needed)..."
-python app/core/init_db.py
+python backend/app/core/init_db.py
 echo "✅ Database initialized."
 
 echo "🚀 Starting FastAPI application..."
-exec uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
+exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
