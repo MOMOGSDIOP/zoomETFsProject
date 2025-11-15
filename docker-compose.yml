@@ -1,4 +1,4 @@
-version: '3.9'
+#version: '3.9'
 
 services:
   backend:
@@ -15,8 +15,7 @@ services:
         condition: service_healthy
       db:
         condition: service_healthy
-      ollama:
-        condition: service_healthy
+      # RETIRÉ la dépendance à ollama - le backend doit démarrer même sans IA
     ports:
       - "8000:8000"
       - "1025:1025"
@@ -35,27 +34,28 @@ services:
     networks:
       - zoometf-net
 
-  # CORRECTION : Ollama d'abord, puis initialisation
+  # SOLUTION INGÉNIEUR : Ollama avec healthcheck qui vérifie seulement que le service répond
   ollama:
     image: ollama/ollama:latest
     container_name: ollama
     restart: unless-stopped
     ports:
-      - "11434:11434"  # ✅ Port standard
+      - "11434:11434"
     volumes:
       - ollama_data:/root/.ollama
     networks:
       - zoometf-net
     environment:
       - OLLAMA_HOST=0.0.0.0
+    # HEALTHCHECK CORRIGÉ : vérifie que l'API répond (HTTP 200), pas le contenu
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]  # ✅ Toujours présent même sans modèle
+      interval: 15s
+      timeout: 10s
+      retries: 5
       start_period: 30s
 
-  # CORRECTION : Service d'initialisation amélioré
+  # SOLUTION INGÉNIEUR : Initialisation asynchrone qui ne bloque pas le système
   ollama_init:
     image: curlimages/curl:latest
     depends_on:
@@ -63,15 +63,21 @@ services:
         condition: service_healthy
     command: >
       sh -c "
-      echo '📥 Téléchargement du modèle llama3:8b...' &&
-      curl -X POST http://ollama:11434/api/pull \
-        -H 'Content-Type: application/json' \
-        -d '{\"name\": \"llama3:8b\"}' &&
-      echo '✅ Modèle téléchargé avec succès'
+      echo '🔍 Vérification des modèles existants...' &&
+      curl -s http://ollama:11434/api/tags | grep -q llama3 ||
+      (
+        echo '📥 Téléchargement du modèle llama3:8b...' &&
+        curl -X POST http://ollama:11434/api/pull \
+          -H 'Content-Type: application/json' \
+          -d '{\"name\": \"llama3:8b\"}' &&
+        echo '✅ Modèle téléchargé avec succès'
+      ) &&
+      echo '🎯 Ollama initialisation terminée'
       "
     networks:
       - zoometf-net
     restart: "no"
+    # Pas de healthcheck - c'est un job one-shot
 
   redis:
     image: redis:alpine
@@ -142,7 +148,7 @@ services:
   grafana:
     image: grafana/grafana
     ports:
-      - "3001:3000"  # ✅ Changé de port pour éviter conflit
+      - "3001:3000"
     environment:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
@@ -167,14 +173,15 @@ services:
       - CHOKIDAR_USEPOLLING=true
       - NODE_ENV=development
     restart: unless-stopped
-    healthcheck:  # ✅ Healthcheck réactivé
+    healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 30s
       timeout: 10s
-      retries: 3
-      start_period: 40s
+      retries: 5
+      start_period: 60s  # Plus long pour npm install
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
       - zoometf-net
 
