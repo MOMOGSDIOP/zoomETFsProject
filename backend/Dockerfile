@@ -15,11 +15,10 @@ RUN apt-get update && apt-get install -y \
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir --timeout 100 -r requirements.txt
 
-
 # === final stage ===
 FROM python:3.9-slim
 
-WORKDIR /zoom-etf
+WORKDIR /zoom-etf/backend
 
 RUN apt-get update && apt-get install -y \
     netcat-openbsd \
@@ -29,16 +28,14 @@ RUN apt-get update && apt-get install -y \
 COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
-COPY backend/app backend/app
-COPY backend/tests backend/tests
-COPY backend/alembic.ini backend/alembic.ini
-COPY backend/start.sh backend/start.sh
+# Copier TOUT le backend
+COPY backend/ /zoom-etf/backend/
 
 ENV PYTHONPATH=/zoom-etf/backend
 ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 
-RUN chmod +x backend/start.sh
+RUN chmod +x start.sh
 
 EXPOSE 8000
 
-CMD ["./backend/start.sh"]
+CMD ["./start.sh"]
