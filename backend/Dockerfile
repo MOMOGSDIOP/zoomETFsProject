@@ -41,4 +41,4 @@ RUN chmod +x backend/start.sh
 
 EXPOSE 8000
 
-CMD ["/zoom-etf/backend/start.sh"]
+CMD ["./backend/start.sh"]
