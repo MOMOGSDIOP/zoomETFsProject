@@ -193,6 +193,7 @@ export default function SemanticETFai({ onSelectETF }) {
                       <TableCell>{etf.name}</TableCell>
                       <TableCell>{etf.price}</TableCell>
                       <TableCell>{etf.performance}%</TableCell>
+                      <TableCell>{etf.issuer}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
