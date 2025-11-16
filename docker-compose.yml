@@ -140,6 +140,9 @@ services:
       - NODE_ENV=production
     ports:
       - "80:3000"
+      - "443:443"
+  volumes:
+    - /etc/letsencrypt:/etc/letsencrypt:ro
     restart: unless-stopped
     healthcheck:
       disable: true
