@@ -209,8 +209,7 @@ services:
   ollama_init:
     image: curlimages/curl:latest
     depends_on:
-      ollama:
-        condition: service_healthy
+     - ollama
     command: >
       sh -c "
       echo '🔍 Attente API Ollama...' &&
