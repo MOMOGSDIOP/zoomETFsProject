@@ -130,7 +130,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: frontend/Dockerfile
+      dockerfile: frontend/Dockerfile.prod
     image: zoometf-frontend
     env_file:
       - ./frontend/.env
