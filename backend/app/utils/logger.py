@@ -1,6 +1,6 @@
 import logging
 from elasticsearch import Elasticsearch
-from app.core import settings
+from backend.app.core import settings
 
 class ETFLogger:
     def __init__(self):
