@@ -1,7 +1,7 @@
 import asyncio
 import smtplib
 from email.mime.text import MIMEText
-from app.core.settings import settings
+from backend.app.core.settings import settings
 
 async def send_email_with_code(to_email: str, code: str):
     subject = "Votre code de connexion ZoomETF"
