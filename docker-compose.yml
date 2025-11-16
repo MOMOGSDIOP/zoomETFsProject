@@ -19,7 +19,7 @@ services:
       - "8000:8000"
       - "1025:1025"  # Conservé pour compatibilité
     environment:
-      - PYTHONPATH=/zoom-etf/backend
+      - PYTHONPATH=/zoom-etf
       - PYTHONUNBUFFERED=1  # Ajout important pour les logs Python
     volumes:
       - ./backend:/zoom-etf/backend
