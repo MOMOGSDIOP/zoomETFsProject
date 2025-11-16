@@ -1,7 +1,7 @@
 import asyncio
 from bs4 import BeautifulSoup
-from app.utils import cache
-from app.core import settings
+from backend.app.utils import cache
+from backend.app.core import settings
 
 class JustETFScraper:
     BASE_URL = "https://www.justetf.com/en/etf-profile.html"
