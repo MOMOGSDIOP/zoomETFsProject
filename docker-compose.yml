@@ -15,8 +15,6 @@ services:
     depends_on:
       redis:
         condition: service_healthy
-      elasticsearch:
-        condition: service_healthy
       db:
         condition: service_healthy
     ports:
@@ -53,29 +51,29 @@ services:
 
 
   ############################
-  # ELASTICSEARCH (FIX COMPLET)
+  # ELASTICSEARCH (Hostinger-friendly)
   ############################
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.6.2
     environment:
       - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m   # Hostinger RAM limité → obligé
+      - network.host=0.0.0.0
+      - bootstrap.memory_lock=false
       - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
       - cluster.routing.allocation.disk.threshold_enabled=false
     ports:
       - "9200:9200"
     restart: unless-stopped
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
+    # Retirer ulimits memlock (souvent interdit par l'hôte)
     volumes:
       - es_data:/usr/share/elasticsearch/data
     healthcheck:
-      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q 'green\|yellow'"]
+      # On attend plus longtemps au démarrage (start_period équivalent via retries+interval)
+      test: ["CMD-SHELL", "curl -sS http://localhost:9200/_cluster/health | grep -E '\"status\":\"(green|yellow)\"' >/dev/null"]
       interval: 20s
       timeout: 10s
-      retries: 10
+      retries: 15
     networks:
       - zoometf-net
 
@@ -206,16 +204,13 @@ services:
     networks:
       - zoometf-net
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:11434/"]
+      test: ["CMD-SHELL", "curl -f http://localhost:11434/ || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 10
       start_period: 60s
 
 
-  ############################
-  # OLLAMA INIT (AUTO DOWNLOAD)
-  ############################
   ollama_init:
     image: curlimages/curl:latest
     depends_on:
