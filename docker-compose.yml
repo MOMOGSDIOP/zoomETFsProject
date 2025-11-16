@@ -247,3 +247,22 @@ volumes:
 networks:
   zoometf-net:
     driver: bridge
+
+
+nginx:
+  build:
+    context: .
+    dockerfile: nginx/Dockerfile
+  image: zoometf-nginx
+  depends_on:
+    - backend
+    - ollama
+  ports:
+    - "80:80"
+    - "443:443"
+  volumes:
+    - /etc/letsencrypt:/etc/letsencrypt:ro
+  networks:
+    - zoometf-net
+  restart: unless-stopped
+
