@@ -204,12 +204,7 @@ services:
     networks:
       - zoometf-net
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:11434/ || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 10
-      start_period: 60s
-
+      disable: true
 
   ollama_init:
     image: curlimages/curl:latest
