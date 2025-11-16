@@ -3,7 +3,7 @@ Synchronise les données entre Yahoo/JustETF et PostgreSQL.
 Gère les pannes et les conflits de données.
 """
 from datetime import datetime
-from app.models import ETF, ETFHistory
+from backend.app.models import ETF, ETFHistory
 
 
 class DataSync:
