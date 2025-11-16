@@ -5,7 +5,7 @@ import json
 import os
 import logging
 
-from app.llama.semantic.llm_preprocessor import InvestmentCriteria
+from backend.app.llama.semantic.llm_preprocessor import InvestmentCriteria
 
 logger = logging.getLogger(__name__)
 
