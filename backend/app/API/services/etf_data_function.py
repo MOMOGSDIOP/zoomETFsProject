@@ -13,18 +13,18 @@ from sqlmodel import Session, select
 from backend.app.services.email_sender import send_email_with_code
 from pydantic import BaseModel
 
-from app.core.security import (
+from backend.app.core.security import (
     create_access_token,
     verify_password,
     get_password_hash
 )
-from app.services.user_service import (
+from backend.app.services.user_service import (
     get_user_by_email,
     create_user,
     update_user_password,
     get_db
 )
-from app.schemas.auth import (
+from backend.app.schemas.auth import (
     EmailRequest,
     VerifyCodeRequest,
     TokenResponse,
