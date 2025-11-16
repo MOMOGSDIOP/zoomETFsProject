@@ -1,7 +1,7 @@
 # backend/app/services/user_service.py
 from sqlalchemy.orm import Session
-from app.models.User import User
-from app.db.database import SessionLocal
+from backend.app.models.User import User
+from backend.app.db.database import SessionLocal
 
 def get_db():
     db = SessionLocal()
