@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException,  Depends
 from sqlmodel import Session
 
-from app.services.user_service import get_db
-import app.API.services.etf_data_function as etf_data_function
-from app.schemas.auth import (
+from backend.app.services.user_service import get_db
+import backend.app.API.services.etf_data_function as etf_data_function
+from backendapp.schemas.auth import (
     EmailRequest,
     VerifyCodeRequest,
     TokenResponse,
@@ -19,8 +19,8 @@ import json
 import redis
 from fastapi import APIRouter, HTTPException, Response
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
-from app.API.utils.alpha_vintage import fetch_enriched_etf_data
-from app.llama.semantic.semantic_search import router as semantic_search 
+from backend.app.API.utils.alpha_vintage import fetch_enriched_etf_data
+from backend.app.llama.semantic.semantic_search import router as semantic_search 
 from dotenv import load_dotenv
 load_dotenv()
 router = APIRouter()
@@ -76,8 +76,8 @@ from typing import List, Dict
 from pydantic import BaseModel
 import logging
 
-from app.llama.semantic.llm_preprocessor import extract_investment_criteria , InvestmentCriteria
-from app.llama.semantic.elasticsearch_manager import cached_search
+from backend.app.llama.semantic.llm_preprocessor import extract_investment_criteria , InvestmentCriteria
+from backend.app.llama.semantic.elasticsearch_manager import cached_search
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["semantic-search"])
