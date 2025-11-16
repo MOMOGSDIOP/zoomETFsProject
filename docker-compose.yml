@@ -1,6 +1,10 @@
-#version: '3.9'
+version: '3.9'
 
 services:
+
+  ############################
+  # BACKEND FASTAPI
+  ############################
   backend:
     build:
       context: .
@@ -17,65 +21,68 @@ services:
         condition: service_healthy
     ports:
       - "8000:8000"
-      - "1025:1025"  # Conservé pour compatibilité
+      - "1025:1025"
     environment:
       - PYTHONPATH=/app
-      - PYTHONUNBUFFERED=1  # Ajout important pour les logs Python
+      - PYTHONUNBUFFERED=1
     restart: unless-stopped
-    healthcheck:  # Nouveau healthcheck
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
     networks:
       - zoometf-net
 
+
+  ############################
+  # REDIS
+  ############################
   redis:
     image: redis:alpine
     restart: unless-stopped
-    healthcheck:  # Healthcheck ajouté
+    healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 5s
       retries: 3
-    volumes:  # Persistence des données
+    volumes:
       - redis_data:/data
     networks:
       - zoometf-net
 
+
+  ############################
+  # ELASTICSEARCH (FIX COMPLET)
+  ############################
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.6.2
-    ports:
-      - "9200:9200"
     environment:
       - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms1g -Xmx1g  # Allocation mémoire
-      - xpack.security.enabled=false  # Sécurité désactivée pour le dev
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m   # Hostinger RAM limité → obligé
+      - xpack.security.enabled=false
+      - cluster.routing.allocation.disk.threshold_enabled=false
+    ports:
+      - "9200:9200"
     restart: unless-stopped
-    ulimits:  # Configuration importante pour ES
+    ulimits:
       memlock:
         soft: -1
         hard: -1
-    volumes:  # Persistence des données
+    volumes:
       - es_data:/usr/share/elasticsearch/data
-    healthcheck:  # Healthcheck ajouté
-      test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q 'green\|yellow'"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
     networks:
       - zoometf-net
 
-  prometheus:
-    image: prom/prometheus
-    # volumes:
-    #  - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
-    ports:
-      - "9090:9090"
-    restart: unless-stopped
-    networks:
-      - zoometf-net
 
+  ############################
+  # POSTGRES
+  ############################
   db:
     image: postgres:14
     container_name: zoometf-postgres
@@ -84,13 +91,13 @@ services:
       POSTGRES_USER: zoomuser
       POSTGRES_PASSWORD: zoompass
       POSTGRES_DB: zoometf
-      PGDATA: /var/lib/postgresql/data/pgdata  # Meilleure organisation
+      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
-      - ./backend/app/db/init:/docker-entrypoint-initdb.d  # Montage du dossier d'initialisation
-    healthcheck:  # Healthcheck ajouté
+      - ./backend/app/db/init:/docker-entrypoint-initdb.d
+    healthcheck:
       test: ["CMD-SHELL", "pg_isready -U zoomuser -d zoometf"]
       interval: 5s
       timeout: 5s
@@ -98,42 +105,80 @@ services:
     networks:
       - zoometf-net
 
+
+  ############################
+  # PGADMIN
+  ############################
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - zoometf-net
+
+
+  ############################
+  # FRONTEND REACT
+  ############################
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    image: zoometf-frontend
+    env_file:
+      - ./frontend/.env
+    working_dir: /app
+    command: sh -c "npm install && npm start"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - NODE_ENV=development
+    ports:
+      - "80:3000"
+    restart: unless-stopped
+    healthcheck:
+      disable: true
+    networks:
+      - zoometf-net
+
+
+  ############################
+  # GRAFANA
+  ############################
   grafana:
     image: grafana/grafana
     ports:
       - "3000:3000"
     restart: unless-stopped
-    volumes:  # Persistence des données
+    volumes:
       - grafana_data:/var/lib/grafana
     networks:
       - zoometf-net
 
-  frontend:
-    build:
-      context: .
-      dockerfile: frontend/Dockerfile
-    working_dir: /app
-    image: zoometf-frontend
-    env_file:
-      - ./frontend/.env
-    #volumes:
-      #- ./frontend/src:/app/src           # Uniquement les sources
-      #- ./frontend/public:/app/public      # Uniquement les assets
-      #- ./frontend/package.json:/app/package.json  # package.json explicitement
-      #- /app/node_modules
+
+  ############################
+  # PROMETHEUS
+  ############################
+  prometheus:
+    image: prom/prometheus
     ports:
-      - "80:3000" # Port exposé pour le frontend
-    command: sh -c "npm install && npm start"
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-      - NODE_ENV=development
+      - "9090:9090"
     restart: unless-stopped
-    healthcheck:
-      disable: true  # << Désactivation du healthcheck pour éviter l'erreur
     networks:
-      - zoometf-net  # << Correction ici : il manquait le nom du réseau
+      - zoometf-net
 
 
+  ############################
+  # DOCS STATIC NGINX
+  ############################
   docs:
     image: nginx:alpine
     volumes:
@@ -144,30 +189,73 @@ services:
     networks:
       - zoometf-net
 
-  pgadmin:
-    image: dpage/pgadmin4
+
+  ############################
+  # OLLAMA
+  ############################
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
     restart: unless-stopped
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@example.com
-      PGADMIN_DEFAULT_PASSWORD: admin
     ports:
-      - "5050:80"
-    volumes:  # Persistence des données
-      - pgadmin_data:/var/lib/pgadmin
-    depends_on:  # Dépendance explicite
-      db:
-        condition: service_healthy
+      - "11434:11434"
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    volumes:
+      - ollama_data:/root/.ollama
     networks:
       - zoometf-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
 
+
+  ############################
+  # OLLAMA INIT (AUTO DOWNLOAD)
+  ############################
+  ollama_init:
+    image: curlimages/curl:latest
+    depends_on:
+      ollama:
+        condition: service_healthy
+    command: >
+      sh -c "
+      echo '🔍 Attente API Ollama...' &&
+      for i in 1 2 3 4 5 6 7 8 9 10; do
+        if curl -s http://ollama:11434/api/version > /dev/null; then break; fi;
+        echo '⏳ Attente 15s...'; sleep 15;
+      done &&
+      echo '🔍 Vérification modèle...' &&
+      if curl -s http://ollama:11434/api/tags | grep -q 'llama3:8b'; then exit 0; fi &&
+      echo '📥 Téléchargement modèle llama3:8b...' &&
+      curl -X POST http://ollama:11434/api/pull \
+        -H 'Content-Type: application/json' \
+        -d '{\"name\":\"llama3:8b\"}' &&
+      echo '🎉 Installation terminée'
+      "
+    networks:
+      - zoometf-net
+    restart: "no"
+
+
+############################
+# VOLUMES
+############################
 volumes:
-  zoometf_db_data:
   redis_data:
   es_data:
   grafana_data:
   pgadmin_data:
   pg_data:
+  ollama_data:
 
+
+############################
+# NETWORK
+############################
 networks:
   zoometf-net:
     driver: bridge
