@@ -3,8 +3,8 @@ from typing import List, Dict
 from pydantic import BaseModel
 import logging
 
-from app.llama.semantic.llm_preprocessor import extract_investment_criteria , InvestmentCriteria
-from .elasticsearch_manager import cached_search
+from backend.app.llama.semantic.llm_preprocessor import extract_investment_criteria , InvestmentCriteria
+from backend.app.llama.semantic.elasticsearch_manager import cached_search
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["semantic-search"])
