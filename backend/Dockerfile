@@ -1,4 +1,4 @@
-FROM python:3.9-slim AS builder
+FROM python:3.9-slim
 
 WORKDIR /zoom-etf
 
@@ -9,35 +9,22 @@ RUN apt-get update && apt-get install -y \
     python3-dev \
     g++ \
     libopenblas-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copier et installer toutes les dépendances d'un coup
-COPY backend/requirements.txt .
-RUN pip install --no-cache-dir --timeout 100 -r requirements.txt
-
-
-# === final stage ===
-FROM python:3.9-slim
-
-WORKDIR /zoom-etf
-
-RUN apt-get update && apt-get install -y \
     netcat-openbsd \
+    curl \
     libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
-COPY --from=builder /usr/local/bin /usr/local/bin
+# Copier et installer les dépendances
+COPY backend/requirements.txt .
+RUN pip install --no-cache-dir --timeout 100 -r requirements.txt
 
-COPY backend/app backend/app
-COPY backend/tests backend/tests
-COPY backend/alembic.ini backend/alembic.ini
-COPY backend/start.sh backend/start.sh
+# Copier le code de l'application
+COPY backend/ /zoom-etf/backend/
 
 ENV PYTHONPATH=/zoom-etf/backend
-ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-
-RUN chmod +x backend/start.sh
+ENV PYTHONUNBUFFERED=1
 
 EXPOSE 8000
 
+# TOUT EST ICI - PAS DE SCRIPT EXTERNE
+CMD uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
