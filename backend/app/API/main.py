@@ -3,7 +3,7 @@ from sqlmodel import Session
 
 from backend.app.services.user_service import get_db
 import backend.app.API.services.etf_data_function as etf_data_function
-from backendapp.schemas.auth import (
+from backend.app.schemas.auth import (
     EmailRequest,
     VerifyCodeRequest,
     TokenResponse,
