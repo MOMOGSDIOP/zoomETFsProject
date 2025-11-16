@@ -1,7 +1,7 @@
 
 from typing import List,Dict
 from elasticsearch import Elasticsearch  
-from app.llama.semantic.llm_preprocessor import  InvestmentCriteria
+from backend.app.llama.semantic.llm_preprocessor import  InvestmentCriteria
 from redis import Redis  
 import json
 
