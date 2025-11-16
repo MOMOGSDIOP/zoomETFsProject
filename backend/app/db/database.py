@@ -10,7 +10,7 @@ SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 Base = declarative_base()
 
 # Importer tous les modèles ici pour qu'ils soient enregistrés dans Base.metadata
-from app.models.User import User
+from backend.app.models.User import User
 # from app.models.ETF import ETF
 # from app.models.ETFHistory import ETFHistory
 # etc.
