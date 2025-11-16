@@ -6,8 +6,8 @@ Service Yahoo Finance avec :
 """
 import httpx
 from datetime import timedelta
-from app.core import settings
-from app.utils import cache
+from backend.app.core import settings
+from backend.app.utils import cache
 
 class YahooFinanceAPI:
     def __init__(self):
