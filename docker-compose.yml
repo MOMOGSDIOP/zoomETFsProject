@@ -21,8 +21,6 @@ services:
     environment:
       - PYTHONPATH=/app
       - PYTHONUNBUFFERED=1  # Ajout important pour les logs Python
-    volumes:
-      - ./backend:/app/backend
     restart: unless-stopped
     healthcheck:  # Nouveau healthcheck
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
