@@ -7,10 +7,10 @@ import json
 import redis
 import csv
 from fastapi import APIRouter, HTTPException, status, Depends
-from app.API.utils.alpha_vintage import fetch_enriched_etf_data
-from app.utils.cache import cache
+from backend.app.API.utils.alpha_vintage import fetch_enriched_etf_data
+from backend.app.utils.cache import cache
 from sqlmodel import Session, select
-from app.services.email_sender import send_email_with_code
+from backend.app.services.email_sender import send_email_with_code
 from pydantic import BaseModel
 
 from app.core.security import (
