@@ -229,6 +229,7 @@ export default function SemanticETFSearcher({ onSelectETF }) {
                     <TableCell>{etf.name}</TableCell>
                     <TableCell>{etf.price}</TableCell>
                     <TableCell>{etf.performance}%</TableCell>
+                    <TableCell>{etf.issuer}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
