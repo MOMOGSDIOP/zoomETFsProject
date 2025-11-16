@@ -2,9 +2,9 @@
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.core.settings import settings
-from app.db.base_class import Base  # ⚠️ utiliser base_class, pas database
-from app.models.User import User
+from backend.app.core.settings import settings
+from backend.app.db.base_class import Base  # ⚠️ utiliser base_class, pas database
+from backend.app.models.User import User
 
 def init():
     print("📦 Création des tables via SQLAlchemy...")
